@@ -21,8 +21,8 @@ def normalize(points):
 def graph(theDF, theDFo, theEQ, graphTitle):
     Small = theDFo[theDFo.Type == 0]
     Big = theDFo[theDFo.Type == 1]
-    plt.scatter(Big['Weight'], Big['Cost'], color='r', s = 5, alpha=0.5)
-    plt.scatter(Small['Weight'], Small['Cost'], color='b', s = 5, alpha=0.5)
+    plt.scatter(Big['Weight'], Big['Cost'], color='r', marker= 'v', s = 5, alpha=0.5)
+    plt.scatter(Small['Weight'], Small['Cost'], color='b', marker= '.', s = 5, alpha=0.5)
     
     x = np.linspace(0, 20, 1000)
     slope = -theEQ[0]/theEQ[1]
@@ -119,13 +119,13 @@ Dfbn= normalize(Dfb)
 Dfcn = normalize(Dfc)
 
 #create Traning and Testing Sets
-train_a_75, test_a_75 = perDataset(Dfan, .75)
-train_b_75, test_b_75= perDataset(Dfbn, .75)
-train_c_75, test_c_75= perDataset(Dfcn, .75)
+train_a_75, test_a_25 = perDataset(Dfan, .75)
+train_b_75, test_b_25= perDataset(Dfbn, .75)
+train_c_75, test_c_25= perDataset(Dfcn, .75)
 
-train_a_25, test_a_25= perDataset(Dfan, .25)
-train_b_25, test_b_25= perDataset(Dfbn, .25)
-train_c_25, test_c_25= perDataset(Dfcn, .25)
+train_a_25, test_a_75= perDataset(Dfan, .25)
+train_b_25, test_b_75= perDataset(Dfbn, .25)
+train_c_25, test_c_75= perDataset(Dfcn, .25)
 
 Dfaaa = Dfan.to_dict('index')
 Dfbbb = Dfbn.to_dict('index')
@@ -140,7 +140,7 @@ Dfb_25 = train_b_25.reset_index().to_dict('index')
 Dfc_25 = train_c_25.reset_index().to_dict('index')
 
 
-#print(Dfa75)
+
 ε_A = 0.00001
 ε_B = 70
 ε_C = 700
@@ -194,9 +194,7 @@ def calculate_inequal(num,ww):
 def testingFunction(df_train,weights, stringTitle):
     
     df_test=df_train
-#    print(df_test)
     df_testPerceptrn=df_test.apply(calculate_inequal,axis=1,ww=(weights))
-#    print(df_testPerceptrn)
     actual_matrix=df_test['Type']
     
     predicted_matrix=df_testPerceptrn
@@ -211,4 +209,14 @@ def testingFunction(df_train,weights, stringTitle):
     return
 
 
+testingFunction(test_a_25,weightsHAFA, "HAF Test on 25% of A")
+
+testingFunction(test_b_25,weightsHAFB, "HAF Test on 25% of A")
+
+testingFunction(test_c_25,weightsHAFC, "HAF Test on 25% of A")
+
 testingFunction(test_a_75,weightsHAFA, "HAF Test on 25% of A")
+
+testingFunction(test_b_75,weightsHAFB, "HAF Test on 25% of A")
+
+testingFunction(test_c_75,weightsHAFC, "HAF Test on 25% of A")
