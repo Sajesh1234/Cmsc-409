@@ -1,8 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import random
-import math
+from sklearn import metrics
 import seaborn as sns
 
 
@@ -23,8 +22,8 @@ def normalize(points):
 def graph(data, weights, graphTitle):
     Small = data[data['Type'] == 0]
     Big = data[data['Type'] == 1]
-    plt.scatter(Big['Weight'], Big['Cost'], color='r', marker='o', s=5)
-    plt.scatter(Small['Weight'], Small['Cost'], color='b', marker='x', s=5)
+    plt.scatter(Big['Weight'], Big['Cost'], color='r', marker='o', s=5, label='Big')
+    plt.scatter(Small['Weight'], Small['Cost'], color='b', marker='x', s=5, label='Small')
     
     x = np.linspace(0, 1.1, 1000)
     b  = -weights[2]/weights[1]
@@ -198,25 +197,32 @@ graph(train_c_25_df, weightSAFC_25, "25% training SAF Group C")
 
 
 def calculate_inequal(num,kk):
-   weighted_sum = num['Cost'] * kk[0] + num['Weight'] * kk[1] + kk[2]
-   if weighted_sum > 0:
-       return 1
-   else:
-       return 0
-   
+    weighted_sum = num['Cost'] * kk[0] + num['Weight'] * kk[1] + kk[2]
+    if weighted_sum > 0:
+        return 1
+    else:
+        return 0
 def testingFunction(df_test,weights, stringTitle):
-    
     df_testPerceptrn=df_test.apply(calculate_inequal,axis=1,kk=(weights))
     actual_matrix=df_test['Type']
     
     predicted_matrix=df_testPerceptrn
     
-    confusion_matrix=pd.crosstab(actual_matrix,predicted_matrix)
+    confusion_matrix = metrics.confusion_matrix(actual_matrix, predicted_matrix)
+    tn, fp, fn, tp = metrics.confusion_matrix(actual_matrix, predicted_matrix).ravel()
+    cm_display = metrics.ConfusionMatrixDisplay(confusion_matrix = confusion_matrix, display_labels = [False, True]) 
+    cm_display.plot()
+    cm_display.ax_.set_title(stringTitle)
+    print("True negatives: " + str(tn))
+    print("False positives: " + str(fp))
+    print("False negatives: " + str(fn))
+    print("True positives: " + str(tp))
+    plt.show() 
+    #confusion_matrix=pd.crosstab(actual_matrix,predicted_matrix,colnames=["Actual"],rownames=["Predicted"])
     
     graph(df_test, weights,stringTitle)
     
-    print(confusion_matrix)
-  
+    #print(confusion_matrix) 
     return
 
 
